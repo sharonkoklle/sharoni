@@ -1,0 +1,225 @@
+def opening_page():
+    """function will print opening page.
+    :param:
+    :type: str
+    :return: The opening page
+    :rtype: str
+    """
+    print((fore.SKY_BLUE_1 + """Wellcome to the-
+    _    _                                         
+   | |  | |                                        
+   | |__| | __ _ _ __   __ _ _ __ ___   __ _ _ __  
+   |  __  |/ _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
+   | |  | | (_| | | | | (_| | | | | | | (_| | | | |
+   |_|  |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+                        __/ |                      
+                       |___/
+"""+ style.RESET) + (fore.LIGHT_YELLOW + """dear player, \nmy name is George, \nunfortunately I bet on you that you are too smart, \nand my proof is this game, \non the screen you are shown a secret word that you must guess, \nand you have """ + style.RESET) + str(MAX_TRIES) + (fore.LIGHT_YELLOW + """ guesses, \nif you fail I will be hanged on the tree,\nplease act wisely and save me from death!""" + style.RESET))
+
+def choose_word(file_path, index):
+    """A function that selects a word according to the file routing, and a location that the user chooses.
+    :return: Returns an underscore as the number of letters in the selected word
+    :rtype: str
+    """
+    with open(file_path, 'r') as choosen_file:
+        reading_file = choosen_file.read()
+        division_file = reading_file.split(' ')
+        number_of_location = int(index)
+        if number_of_location > (len(division_file) - 1):
+            iterator = islice(cycle(division_file), 1000000)
+            saved_words = []
+            for element in iterator:
+                saved_words.append(element)
+            original_word = saved_words[number_of_location - 1]
+            words_list.append(original_word)
+            print(len(original_word) * (' _ '))
+            return
+        elif number_of_location <= (len(division_file) - 1):
+            original_word = division_file[number_of_location - 1]
+            words_list.append(original_word)
+            print(len(original_word) * (' _ '))
+            return
+            
+HANGMAN_PHOTOS = {'picture 1' : """
+    x-------x
+""",
+'picture 2': """
+    x-------x
+    |
+    |
+    |
+    |
+    |
+""",
+'picture 3': """
+    x-------x
+    |       |
+    |       0
+    |
+    |
+    |
+""",
+'picture 4': """
+    x-------x
+    |       |
+    |       0
+    |       |
+    |
+    |
+""",
+'picture 5': """
+    x-------x
+    |       |
+    |       0
+    |      /|\\
+    |
+    |
+""",
+'picture 6': """
+    x-------x
+    |       |
+    |       0
+    |      /|\\
+    |      /
+    |
+""",
+'picture 7': """
+    x-------x
+    |       |
+    |       0
+    |      /|\\
+    |      / \\
+    |
+    """}
+    
+def print_hangman(num_of_tries):
+    """A function that returns the state of the hangman according to the number of wrong attempts.
+    :param num_of_tries: The number of incorrect attempts
+    :type num_of_tries: int
+    :return: The current state of the hangman
+    :rtype: str
+    """
+    if num_of_tries == 0:
+        print(fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 1'] + style.RESET)
+    elif num_of_tries == 1:
+        print((fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 2'] + style.RESET) + (fore.LIGHT_YELLOW + '\nYou have 5 tries left...' + style.RESET))
+    elif num_of_tries == 2:
+        print((fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 3'] + style.RESET) + (fore.LIGHT_YELLOW + '\nYou have 4 tries left...' + style.RESET))
+    elif num_of_tries == 3:
+        print((fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 4'] + style.RESET) + (fore.LIGHT_YELLOW + '\nYou have 3 tries left...' + style.RESET))
+    elif num_of_tries == 4:
+        print((fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 5'] + style.RESET) + (fore.LIGHT_YELLOW + '\nYou have 2 tries left...' + style.RESET))
+    elif num_of_tries == 5:
+        print((fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 6'] + style.RESET) + (fore.LIGHT_YELLOW + '\nYou have 1 tries left...' + style.RESET))
+    elif num_of_tries == 6:
+        print(fore.SKY_BLUE_1 + HANGMAN_PHOTOS['picture 7'] + style.RESET)
+    else:
+        print(False)
+        
+def try_update_letter_guessed():
+    """A function that checks the correctness of the guessed character.
+    :return:none
+    """
+    var = 0
+    while var < 5:
+        guess_a_letter = input("Guess a letter:")
+        alphabetical_letter = guess_a_letter.isalpha()
+        num_of_letters = len(guess_a_letter)
+        lower_letter = guess_a_letter.lower()
+        find_the_letter = old_letters_guessed.count(lower_letter)
+        old_letters_guessed.sort()
+        str_old_letters_guessed = ''.join(old_letters_guessed)
+        if num_of_letters != 1 or alphabetical_letter != True or find_the_letter != 0:
+            if len(old_letters_guessed) == 0:
+                print("X")
+            else:
+                print("""X\n""" + ('-> '.join(str_old_letters_guessed)))
+        elif num_of_letters == 1 and alphabetical_letter == True and find_the_letter == 0:
+            old_letters_guessed.append(lower_letter)
+            letter_guessed.append(lower_letter)
+            break
+            
+def show_hidden_word(secret_word, old_letters_guessed):
+    """A function that prints the current state of the secret word
+    :param secret_word: The secret word that the user chose in a text format
+    :type secret_word: str
+    :param old_letters_guessed: The list of old letters that have been guessed
+    :type old_letters_guessed: list
+    :return: none
+    """
+    help_list_for_show_hidden_word = []
+    for letter in secret_word:
+        if old_letters_guessed.count(letter) == 0:
+            help_list_for_show_hidden_word.append('_')
+        else:
+            help_list_for_show_hidden_word.append(letter)
+    if num_of_tries != 6:
+        print(' '.join(help_list_for_show_hidden_word))
+        
+def check_win(secret_word, old_letters_guessed):
+    """A function that checks if the user won or lost the game.
+    :param secret_word: The secret word that the user chose in a text format
+    :type secret_word: str
+    :param old_letters_guessed: The list of old letters that have been guessed
+    :type old_letters_guessed: list
+    :return: If there is no underscore in the last result received, the word true will be returned
+    :rtype: null
+    """
+    help_list_for_check_win = []
+    for letter in secret_word:
+        if old_letters_guessed.count(letter) == 0:
+            help_list_for_check_win.append('_')
+        else:
+            help_list_for_check_win.append(letter)
+    str_help_list_for_check_win = ' '.join(help_list_for_check_win)
+    if str_help_list_for_check_win.find('_') == -1:
+        return True
+        
+def check_wrong_tries(secret_word, letter_guessed):
+    """A function that concentrates the amount of wrong attempts.
+    :param secret_word: The secret word that the user chose in a text format
+    :type secret_word: str
+    :return: If the letter does not exist in the guessed word, false will be returned
+    :rtype: null
+    """
+    str_letter_guessed = ''.join(letter_guessed)
+    if secret_word.count(str_letter_guessed) == 0:
+        wrong_letters.append(str_letter_guessed)
+        print(fore.LIGHT_YELLOW + 'OMG, I\'m going to die!:(' + style.RESET)
+        return False
+
+if __name__ == '__main__':
+    from itertools import cycle, islice
+    from colored import fore, style
+    MAX_TRIES = fore.LIGHT_YELLOW + '6' + style.RESET #Maximum attempts
+    opening_page()
+    words_list = [] #The chosen word
+    letter_guessed = [] #the guessed letter
+    file_path = input('Please enter a file path:') #The file path
+    index = input('Please enter a index:') #word position
+    wrong_letters = [] #List of incorrect letters
+    num_of_tries = len(wrong_letters) #The number of incorrect attempts
+    old_letters_guessed = [] #The list of guessed letters
+    print(fore.LIGHT_YELLOW + "Hey, it's me again, George, this is my current state, please keep me alive!" + style.RESET)
+    print_hangman(num_of_tries)
+    print(fore.LIGHT_YELLOW + "And this is the secret word you have to guess, good luck!" + style.RESET)
+    choose_word(file_path, index) #word choice
+    secret_word = ''.join(words_list) #Converting the word to textchecking its correctness
+    
+    while num_of_tries <= 6:
+        try_update_letter_guessed() #Guessing the letter and checking its correctness
+        if check_wrong_tries(secret_word, letter_guessed) == False:
+            num_of_tries = len(wrong_letters)
+            print_hangman(num_of_tries)
+        letter_guessed = [] #Reset the guessed letter
+        if num_of_tries == 6:
+            show_hidden_word(secret_word, old_letters_guessed)
+            print((fore.RED + 'LOSE\n' + style.RESET) + (fore.LIGHT_YELLOW + 'That\'s all, in the next few minutes I\'ll die, I knew I shouldn\'t have trusted you...' + style.RESET))
+            break
+        elif check_win(secret_word, old_letters_guessed) == True:
+            show_hidden_word(secret_word, old_letters_guessed)
+            print((fore.GREEN + 'WIN\n'+ style.RESET) + (fore.LIGHT_YELLOW + 'Yay, I\'m alive! And it\'s only thanks to you, you are my hero!'+ style.RESET))
+            break
+        else:
+            print(fore.LIGHT_YELLOW + 'This is the current state of the word, please think smart!' + style.RESET)
+            show_hidden_word(secret_word, old_letters_guessed)
